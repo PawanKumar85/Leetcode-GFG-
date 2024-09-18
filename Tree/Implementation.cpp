@@ -135,6 +135,17 @@ public:
         }
         return;
     }
+
+    int diameter(Node* root){
+        if(root == nullptr)
+            return 0;
+        
+        int d1 = findHight(root -> left) + findHight(root -> right) + 1;
+        int d2 = diameter(root -> left);
+        int d3 = diameter(root -> right);
+
+        return max(max(d1,d2),d3);
+    }
 };
 
 class Traversal
@@ -323,13 +334,11 @@ int main()
 {
     BinaryTree Tree;
     Traversal Display;
-    Views PrintViews; 
-    Views side;
     Node *root = nullptr;
     root = Tree.Insertion();
+    Display.inOrder(root);
 
-    // Display.inOrder(root);
-    PrintViews.topView(root);
+    cout << Tree.diameter(root);
     return 0;
 }
 
