@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <stack>
+#include <map>
 using namespace std;
 
 class Node
@@ -223,50 +224,112 @@ public:
 
 class Views
 {
-    int maxLevelLeft = 0;
-    int maxLevelRight = 0;
+    int maxLeft = 0;
+    int maxRight = 0;
 
-public:
-    void leftView(Node *root, int level)
-    {
-        if (root == nullptr)
-            return;
+    public:
+        void leftView(Node* root,int level){
+            if(root == nullptr)
+                return;
+            
+            if(level >= maxLeft){
+                cout << root -> data << " ";
+                maxLeft++; 
+            }
 
-        if (level >= maxLevelLeft)
-        {
-            cout << root->data << " ";
-            maxLevelLeft++;
+            leftView(root -> left,level + 1);
+            leftView(root -> right,level + 1);
+        }
+    
+        void rightView(Node* root,int level){
+            if(root == nullptr)
+                return;
+            
+            if(level >= maxRight){
+                cout << root -> data << " ";
+                maxRight++;
+            }
+            rightView(root -> right,level + 1);
+            rightView(root -> left,level + 1);
         }
 
-        leftView(root->left, level + 1);
-        leftView(root->right, level + 1);
-    }
-    void rightView(Node *root, int level)
-    {
-        if (root == nullptr)
-            return;
+        vector<int> topView(Node* root){
+            vector<int> ans;
 
-        if (level >= maxLevelRight)
-        {
-            cout << root->data << " ";
-            maxLevelRight++;
+            if(root == nullptr)
+                return ans;
+            
+            map<int,int> mp;
+            queue<pair<Node*,int>>q;
+            q.push({root,0});
+
+            while(!q.empty()){
+                auto temp = q.front();
+                q.pop();
+
+                auto first = temp.first;
+                int ht = temp.second;
+
+                if(mp.find(ht) == mp.end())
+                    mp[ht] = first -> data;
+                
+                if(first -> left)
+                    q.push({first -> left,ht - 1});
+                
+                if(first -> right)
+                    q.push({first -> right, ht + 1});
+            }
+
+            for(auto i : mp)
+                ans.push_back(i.second);
+            
+            return ans;
         }
 
-        rightView(root->right, level + 1);
-        rightView(root->left, level + 1);
-    }
+        vector<int> bottomView(Node* root){
+            vector<int> ans;
+
+            if(root == nullptr)
+                return ans;
+            
+            map<int,int> mp;
+            queue<pair<Node*,int>>q;
+            q.push({root,0});
+
+            while(!q.empty()){
+                auto temp = q.front();
+                q.pop();
+
+                auto first = temp.first;
+                int ht = temp.second;
+
+                mp[ht] = first -> data;
+                
+                if(first -> left)
+                    q.push({first -> left,ht - 1});
+                
+                if(first -> right)
+                    q.push({first -> right, ht + 1});
+            }
+
+            for(auto i : mp)
+                ans.push_back(i.second);
+            
+            return ans;
+        }
 };
 
 int main()
 {
     BinaryTree Tree;
     Traversal Display;
+    Views PrintViews; 
     Views side;
     Node *root = nullptr;
     root = Tree.Insertion();
 
-    Tree.mirrorTree(root);
-    Display.inOrder(root);
+    // Display.inOrder(root);
+    PrintViews.topView(root);
     return 0;
 }
 
